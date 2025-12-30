@@ -17,7 +17,9 @@ class Maze:
         map_lines = lines[4:]  # everything after 'map' line
         self.grid = [list(line.strip()) for line in map_lines]
 
-        lines = lines
+        # Additional Check
+        if len(self.grid) != self.height or any(len(row) != self.width for row in self.grid):
+            raise ValueError("Map size does not match height/width in header.")
 
     def display(self):
         pass
