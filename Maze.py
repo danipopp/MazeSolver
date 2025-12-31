@@ -20,6 +20,12 @@ class Maze:
         # Additional Check
         if len(self.grid) != self.height or any(len(row) != self.width for row in self.grid):
             raise ValueError("Map size does not match height/width in header.")
+        
+    def is_free(self, x, y):
+        """Return True if (x, y) is inside the maze and not a wall."""
+        if 0 <= x < self.width and 0 <= y < self.height:
+            return self.grid[y][x] == '.'
+        return False
 
     def display(self, start=None, goal=None, path=None):
         """Print the maze with optional start, goal, and path."""
@@ -63,4 +69,29 @@ class Maze:
                         row += self.grid[y][x]
                 f.write(row + "\n")  # write each row to the file
 
+    def save_as_ppm(self, filename, start=None, goal=None, path=None, visited=None):
+        scale = 2  # enlarge pixels
+        with open(filename, "w") as f:
+            f.write("P3\n")
+            f.write(f"{self.width * scale} {self.height * scale}\n")
+            f.write("255\n")
 
+            for y in range(self.height):
+                for sy in range(scale):
+                    for x in range(self.width):
+                        for sx in range(scale):
+                            if start and (x, y) == start:
+                                color = (0, 255, 0)       # green
+                            elif goal and (x, y) == goal:
+                                color = (255, 0, 0)       # red
+                            elif path and (x, y) in path:
+                                color = (0, 0, 255)       # blue
+                            elif self.grid[y][x] == '@':
+                                color = (0, 0, 0)         # black
+                            elif visited and (x, y) in visited:
+                                color = (200, 200, 200)
+                            else:
+                                color = (255, 255, 255)   # white
+
+                            f.write(f"{color[0]} {color[1]} {color[2]} ")
+                    f.write("\n")
